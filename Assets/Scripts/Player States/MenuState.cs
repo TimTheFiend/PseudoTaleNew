@@ -29,12 +29,17 @@ public class MenuState : IState
         MoveMenuSelector();
 
         if (Input.GetKeyDown(KeyCode.Z)) {
-
+            ActivateSelectedOption();
         }
 
         if (Input.GetKeyDown(KeyCode.X)) {
             player.state.ChangeState(new MovementState(player));
         }
+    }
+
+    private void ActivateSelectedOption() {
+        // todo
+        MenuBehavior.instance.ActivateSelected();
     }
 
     private void MoveMenuSelector() {
@@ -45,7 +50,7 @@ public class MenuState : IState
 
 
         if (menuPosition != oldMenuPosition) {
-            MenuBehavior.instance.NavigateMenu(menuPosition.y);
+            MenuBehavior.instance.NavigateMenu(menuPosition);
             oldMenuPosition = menuPosition;
         }
     }

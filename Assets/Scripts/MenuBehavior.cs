@@ -11,6 +11,9 @@ public class MenuBehavior : MonoBehaviour
     private bool isMenuOpen = false;
     private int menuIndex = 0;
 
+    [SerializeField]
+    public Submenu inventory;
+
 
     [Header("Main Menu Objects")]
     [SerializeField]
@@ -19,6 +22,21 @@ public class MenuBehavior : MonoBehaviour
     private GameObject mainSelector;
     [SerializeField]
     private GameObject[] mainOptions;
+
+    [Header("Inventory")]
+    [SerializeField]
+    private GameObject invMenu;
+    [SerializeField]
+    private GameObject invSelector;
+    [SerializeField]
+    private GameObject[] invOptions;
+
+
+    //[Header("Stat")]
+
+    //[Header("Cell")]
+
+
 
     // To switch between
     private GameObject currentMenu;
@@ -35,7 +53,7 @@ public class MenuBehavior : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
-        ResetCurrentMenu();
+        Initialize();
     }
 
     public void OpenMenu() {
@@ -43,14 +61,21 @@ public class MenuBehavior : MonoBehaviour
         else Pause();
     }
 
-    public void NavigateMenu(float y) {
-        y *= -1;  // Since moving "Up" is "+1" we need to flip the value for "Up" and "Down"
-        if (y + menuIndex < 0 || y + menuIndex > currentOptions.Length - 1) { 
+    // Needs to be re-written to account for different sub menus
+    public void NavigateMenu(Vector2 menuPosition) {
+        menuPosition.y *= -1;  // Since moving "Up" is "+1" we need to flip the value for "Up" and "Down"
+        if (menuPosition.y + menuIndex < 0 || menuPosition.y + menuIndex > currentOptions.Length - 1) { 
             return;
         }
-        menuIndex += (int)y;
+        menuIndex += (int)menuPosition.y;
         currentSelector.transform.position = new Vector3(currentSelector.transform.position.x, currentOptions[menuIndex].transform.position.y);
     }
+
+    public void ActivateSelected() {
+        IState menu = currentOptions[menuIndex].gameObject.GetComponent<IState>();
+        print(menu);
+    }
+
 
     private void Resume() {
         isMenuOpen = false;
@@ -64,14 +89,28 @@ public class MenuBehavior : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
+
+
+
     // Sets the `current`X´` variables to the first layer of menu (Main)
-    private void ResetCurrentMenu() {
+    private void Initialize() {
         currentMenu = mainMenu;
         currentSelector = mainSelector;
         currentOptions = mainOptions;
 
         isMenuOpen = false;
-        currentMenu.SetActive(false);
+        mainMenu.SetActive(false);
+        invMenu.SetActive(false);
     }
-
+    
+    public class Submenu
+    {
+        [Header("Inventory")]
+        [SerializeField]
+        private GameObject invMenu;
+        [SerializeField]
+        private GameObject invSelector;
+        [SerializeField]
+        private GameObject[] invOptions;
+    }
 }

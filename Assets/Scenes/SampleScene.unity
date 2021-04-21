@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 861637226}
   - component: {fileID: 861637225}
   m_Layer: 5
-  m_Name: Main Menu
+  m_Name: Menu Handler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -317,9 +317,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2d83e6dccc3c04c8f115809c52f43c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuUI: {fileID: 1224935640}
-  menuSelector: {fileID: 970434350}
-  menuOptions:
+  mainMenu: {fileID: 1224935640}
+  mainSelector: {fileID: 970434350}
+  mainOptions:
   - {fileID: 999765506}
   - {fileID: 1288483328}
   - {fileID: 42124725}
@@ -893,7 +893,7 @@ GameObject:
   - component: {fileID: 1219588471}
   - component: {fileID: 1219588470}
   m_Layer: 5
-  m_Name: Menu Inner
+  m_Name: Inner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -972,7 +972,7 @@ GameObject:
   - component: {fileID: 1224935642}
   - component: {fileID: 1224935641}
   m_Layer: 5
-  m_Name: Menu
+  m_Name: Main Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1106,7 +1106,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: STATS
+  m_Text: STAT
 --- !u!222 &1288483331
 CanvasRenderer:
   m_ObjectHideFlags: 0
