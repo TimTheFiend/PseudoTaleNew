@@ -14,43 +14,41 @@ public class MenuState : IState
     }
 
     public void Enter() {
-        MenuBehavior.instance.OpenMenu();
+        MenuManager.instance.OpenDefaultMenu();
         Debug.Log("ENTER: " + this.GetType().Name);
     }
 
     public void Exit() {
-        MenuBehavior.instance.OpenMenu();
+        MenuManager.instance.OpenDefaultMenu();
         Debug.Log("EXIT: " + this.GetType().Name);
     }
 
     public void Execute() {
         menuPosition = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        MoveMenuSelector();
+        MoveMenuCursor();
 
+        // `Presses` the `Button`
         if (Input.GetKeyDown(KeyCode.Z)) {
-            ActivateSelectedOption();
+            MenuManager.instance.ActivateCursor();
         }
 
         if (Input.GetKeyDown(KeyCode.X)) {
-            player.state.ChangeState(new MovementState(player));
+            if (MenuManager.instance.GoBack()) {
+                player.state.ChangeState(new MovementState(player));
+            }
         }
     }
 
-    private void ActivateSelectedOption() {
-        // todo
-        MenuBehavior.instance.ActivateSelected();
-    }
-
-    private void MoveMenuSelector() {
+    private void MoveMenuCursor() {
         if (menuPosition.x == 0 && menuPosition.y == 0) {
             oldMenuPosition = menuPosition;
             return;
         }
 
-
         if (menuPosition != oldMenuPosition) {
-            MenuBehavior.instance.NavigateMenu(menuPosition);
+            MenuManager.instance.MoveCursor(menuPosition);
+            //MenuBehavior.instance.NavigateMenu(menuPosition);
             oldMenuPosition = menuPosition;
         }
     }

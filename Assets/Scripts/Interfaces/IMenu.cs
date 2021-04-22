@@ -1,17 +1,13 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine;
 
 public interface IMenu
 {
-    public GameObject menu { get; set; }
-    public GameObject selector { get; set; }
-    public List<GameObject> options { get; set; }
+    public int menuIndex { get; set; }
 
     public void OpenMenu();
     public void CloseMenu();
-    public void NavigateMenu();
-
-
+    public void MoveCursor(Vector2 cursorPos);
+    public void ActivateCursor();
 }
