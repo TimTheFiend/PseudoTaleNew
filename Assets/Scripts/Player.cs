@@ -11,12 +11,14 @@ public class Player : MonoBehaviour
     public int lv = 1;
     public int maxHP = 20;
 
-    public StateMachine state = new StateMachine();
+    public StateMachine state = new StateMachine();  // Handles different player states.
 
     [Header("Runtime Variables")]
     public int currentHP;
     [SerializeField]
-    private List<GameObject> interactableEntities;  // TODO
+    private List<GameObject> interactableEntities;
+    
+    public bool canInteract;
 
 
     private void Awake() {
@@ -29,4 +31,46 @@ public class Player : MonoBehaviour
         state.Update();
     }
 
+    // Returns the only/closest Entity in `interactableEntities`
+    public InteractableEntity GetEntity() {
+        if (interactableEntities.Count == 0) {
+            return interactableEntities[0].GetComponent<InteractableEntity>();
+        }
+        return GetClosestEntity();
+    }
+
+    // Calculates and returns the closest Entity within `interactableEntities`
+    private InteractableEntity GetClosestEntity() {
+        GameObject closestEntity = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (GameObject entity in interactableEntities) {
+            float distance = Vector2.Distance(entity.transform.position, transform.position);
+            if (distance < minDistance) {
+                closestEntity = entity;
+                minDistance = distance;
+            }
+        }
+        return closestEntity.GetComponent<InteractableEntity>();
+    }
+
+    #region Collisions
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.tag == "Entity") {
+            interactableEntities.Add(other.gameObject);
+        }
+        UpdateCanInteract();
+    }
+
+    private void OnCollisionExit2D(Collision2D other) {
+        if (interactableEntities.Contains(other.gameObject)) {
+            interactableEntities.Remove(other.gameObject);
+        }
+        UpdateCanInteract();
+    }
+
+    private void UpdateCanInteract() {
+        canInteract = interactableEntities.Count > 0;
+    }
+    #endregion
 }

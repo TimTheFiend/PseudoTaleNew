@@ -11,40 +11,42 @@ public class MenuManager : MonoBehaviour
 
     [Header("Default menu")]
     [SerializeField]
-    private GameObject defaultMenu;
+    private GameObject defaultMenu;  // The "main" menu that opens when not currently in `MenuState` 
 
-    private GameObject currentMenuObject;
-    private IMenu currentMenu;
+    private GameObject currentMenuObject;   // The current `IMenu` gameobject
+    private IMenu currentMenu;              // The current `IMenu` object
 
 
     private void Awake() {
-        if (instance == null) {
-            instance = this;
-        }
-        else if (instance != this) {
-            Destroy(gameObject);
-        }
+        #region Singleton pattern
+        if (instance == null) { instance = this; }
+        else if (instance != this) { Destroy(gameObject); }
         DontDestroyOnLoad(gameObject);
+        #endregion
 
         SetMenuToDefault();
     }
 
+    // Activates the currently selected element in the current menu.
     public void ActivateCursor() {
         currentMenu.ActivateCursor();
     }
 
+    // Sends the movement input to the current menu.
     public void MoveCursor(Vector2 cursor) {
         currentMenu.MoveCursor(cursor);
     }
 
+    // Goes back a menu-layer, and returns true if the current menu is the first layer.
     public bool GoBack() {
-        bool isDefault = currentMenuObject == defaultMenu;
+        bool isDefault = currentMenuObject == defaultMenu;  // Since all menus inherit from IMenu, they all have different `CloseMenu` interactions.
 
         currentMenu.CloseMenu();
 
         return isDefault;
     }
 
+    // Sets currentMenuObject and currentMenu, and calls its `OpenMenu` function
     public void ChangeMenu(GameObject newMenu) {
         currentMenuObject = newMenu;
         currentMenu = newMenu.GetComponent<IMenu>();
@@ -56,6 +58,7 @@ public class MenuManager : MonoBehaviour
         SetMenuToDefault();
     }
 
+    // Is called from `PlayMainMenu` on `Open` and `Close`
     public void OpenDefaultMenu() {
         if (isMenuOpen) {
             DefaultExit();
@@ -77,6 +80,7 @@ public class MenuManager : MonoBehaviour
         currentMenu.CloseMenu();
     }
 
+    // Resets the currentMenu to defaultMenu
     private void SetMenuToDefault() {
         currentMenuObject = defaultMenu;
         currentMenu = defaultMenu.GetComponent<IMenu>();

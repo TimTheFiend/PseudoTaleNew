@@ -14,7 +14,7 @@ public class MovementState : IState
     private enum MoveDir { W, A, S, D }
     private MoveDir playerDir;  // Used to store direction `Player` is facing after `Movement` stops.
 
-
+    // Constructor
     public MovementState(Player player) {
         this.player = player;
 
@@ -22,6 +22,7 @@ public class MovementState : IState
         rigidbody = player.GetComponent<Rigidbody2D>();
     }
 
+    #region Interface implementation
     public void Enter() {
         Debug.Log("ENTER: " + this.GetType().Name);
     }
@@ -34,17 +35,23 @@ public class MovementState : IState
         playerPosition = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         MovePlayer();
         UpdateAnimation();
-    }
 
-    private void MovePlayer() {
+        // Check for player input
+        if (Input.GetKeyDown(KeyCode.Z) && player.canInteract) {
+            player.state.ChangeState(new InteractState(player));
+        }
         if (Input.GetKeyDown(KeyCode.X)) {
             player.state.ChangeState(new MenuState(player));
         }
 
+    }
+    #endregion
+
+    private void MovePlayer() {
         rigidbody.velocity = playerPosition * player.movementSpeed;
-        //rigidbody.MovePosition(rigidbody.position + newPlayerPosition * player.movementSpeed * Time.fixedDeltaTime);
     }
 
+    // Updates Animator variables
     private void UpdateAnimation() {
         if (playerPosition.x == 0 && playerPosition.y == 0) {
             isMoving = false;
