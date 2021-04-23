@@ -38,6 +38,7 @@ public class MovementState : IState
 
         // Check for player input
         if (Input.GetKeyDown(KeyCode.Z) && player.canInteract) {
+            Debug.Log("CAN INTERACT");
             player.state.ChangeState(new InteractState(player));
         }
         if (Input.GetKeyDown(KeyCode.X)) {

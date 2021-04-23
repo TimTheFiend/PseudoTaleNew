@@ -14,19 +14,27 @@ public class InteractState : IState
 
     public void Enter() {
         // Show UI or something
+        entity.StartInteraction();
         Debug.Log("ENTER: " + this.GetType().Name);
     }
 
     public void Exit() {
-        Debug.Log("EXIT: " + this.GetType().Name);
+        entity.EndInteraction();
     }
     public void Execute() {
         if (Input.GetKeyDown(KeyCode.Z)) {
             // Advance interaction.
+            AdvanceInteraction();
         }
 
         //DEBUG: to cancel out
         if (Input.GetKeyDown(KeyCode.X)) {
+            player.state.ChangeState(new MovementState(player));
+        }
+    }
+
+    private void AdvanceInteraction() {
+        if (!DialogueManager.instance.AdvanceDialogue()) {
             player.state.ChangeState(new MovementState(player));
         }
     }

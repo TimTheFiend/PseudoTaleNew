@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 510e177e1e7da87489a727704aaf77e9, type: 3}
-  m_Name: Dialogue
+  m_Name: Encounter_1b
   m_EditorClassIdentifier: 
-  _name: 
-  dialogue: []
+  id: 0
+  isRepeatable: 0
+  sentences: []

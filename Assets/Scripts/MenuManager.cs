@@ -60,6 +60,7 @@ public class MenuManager : MonoBehaviour
 
     // Is called from `PlayMainMenu` on `Open` and `Close`
     public void OpenDefaultMenu() {
+        print(isMenuOpen);
         if (isMenuOpen) {
             DefaultExit();
         }
@@ -68,10 +69,11 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    #region Pause/Resume
     private void DefaultEnter() {
+        currentMenu.OpenMenu();
         isMenuOpen = true;
         Time.timeScale = 0f;
-        currentMenu.OpenMenu();
     }
 
     private void DefaultExit() {
@@ -79,6 +81,7 @@ public class MenuManager : MonoBehaviour
         Time.timeScale = 1f;
         currentMenu.CloseMenu();
     }
+    #endregion
 
     // Resets the currentMenu to defaultMenu
     private void SetMenuToDefault() {

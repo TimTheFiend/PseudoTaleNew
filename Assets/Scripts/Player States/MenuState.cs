@@ -25,12 +25,13 @@ public class MenuState : IState
     }
     #endregion
 
+
     public void Execute() {
         menuPosition = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
         MoveMenuCursor();
 
-        // `Presses` the `Button`
+        // Activates the currently selected menu option.
         if (Input.GetKeyDown(KeyCode.Z)) {
             MenuManager.instance.ActivateCursor();
         }

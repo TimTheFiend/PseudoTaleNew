@@ -2,10 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class Dialogue
+[CreateAssetMenu(fileName = "Dialogue", menuName = "Dialogue")]
+public class Dialogue : ScriptableObject
 {
-    public string _name;
+    [Header("ConversationID")]
+    public int id;
 
+    [Header("Settings")]
+    public bool isRepeatable;
+    [TextArea(3, 3)]
     public string[] sentences;
+
 }

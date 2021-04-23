@@ -11,11 +11,8 @@ public class PlayMainMenu : MonoBehaviour, IMenu
 
     public int menuIndex { get; set; } = 0;
 
-    private void Awake() {
-        gameObject.SetActive(false);
-    }
-
     public void OpenMenu() {
+        print("MENU OPEN");
         menu.SetActive(true);
     }
 
@@ -41,7 +38,4 @@ public class PlayMainMenu : MonoBehaviour, IMenu
     private void UpdateSelectorPosition() {
         selector.transform.position = new Vector3(selector.transform.position.x, options[menuIndex].transform.position.y);
     }
-
-
-
 }
