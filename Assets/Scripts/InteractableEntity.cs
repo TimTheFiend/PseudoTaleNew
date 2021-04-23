@@ -1,26 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InteractableEntity : MonoBehaviour
 {
     [Header("Character information")]
     public string Name = "<NOT SET>";
 
-    [Header("Dialogue Files")]
+    [Header("Dialogue Data")]
     public List<Dialogue> dialogues;
+    public List<Sprite> dialogueImages;
 
     [Header("Debug")]
     [SerializeField]
     private int currentDialogueIndex;
 
-    private void Awake() {
-    }
-
     public void StartInteraction() {
         currentDialogueIndex = 0;
         
-        DialogueManager.instance.StartDialogue(dialogues[currentDialogueIndex]);
+        DialogueManager.instance.StartDialogue(dialogues[currentDialogueIndex], this);
+    }
+
+    public void AdvanceInteraction() {
+
     }
 
     public void EndInteraction() {
@@ -28,8 +31,5 @@ public class InteractableEntity : MonoBehaviour
             dialogues.RemoveAt(currentDialogueIndex);
         }
         return;
-        if (!dialogues[currentDialogueIndex].isRepeatable) {
-            dialogues.RemoveAt(currentDialogueIndex);
-        }
     }
 }

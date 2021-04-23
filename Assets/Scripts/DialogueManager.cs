@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+    public static DialogueManager instance = null;
+    private InteractableEntity currentEntity;
+
     [Header("UI Element")]
     public GameObject dialogueBox;
 
@@ -12,24 +15,20 @@ public class DialogueManager : MonoBehaviour
     public Text textOnly;
 
     [Header("Text + Image")]
-    public GameObject textImage;
-    public Text text;
+    public Text textImage;
     public Image image;
 
-    public static DialogueManager instance = null;
-
-    //public Text dialogueText;
-
+    private bool hasImage = false;
+    private Text currentText;
 
     private Queue<string> sentences;
 
     private void Awake() {
         dialogueBox.SetActive(false);
 
-        text = textImage.GetComponent<Text>();
-        image = textImage.GetComponent<Image>();
-
-
+        textOnly.gameObject.SetActive(false);
+        textImage.gameObject.SetActive(false);
+        image.gameObject.SetActive(false);
     }
 
     void Start()
@@ -43,8 +42,32 @@ public class DialogueManager : MonoBehaviour
         sentences = new Queue<string>();
     }
 
-    public void StartDialogue(Dialogue dialogue) {
+    public void StartDialogue(Dialogue dialogue, InteractableEntity entity) {
         dialogueBox.SetActive(true);
+
+        currentEntity = entity;
+
+        hasImage = entity.dialogueImages.Count > 0;
+
+        currentText = hasImage ? textImage : textOnly;
+
+        //switch (currentEntity.entityType) {
+        //    case EntityEnum.NOTSET:
+        //        Debug.Log("ENTITY TYPE NOT SET!!!!");
+        //        break;
+        //    case EntityEnum.Object:
+        //        currentText = textOnly;
+        //        hasImage = false;
+        //        break;
+        //    case EntityEnum.Entity:
+        //        currentText = textImage;
+        //        hasImage = true;
+        //        image.gameObject.SetActive(true);
+        //        break;
+        //}
+
+        image.gameObject.SetActive(hasImage);
+        currentText.gameObject.SetActive(true);
 
         sentences.Clear();  // Clear sentences
 
@@ -54,7 +77,6 @@ public class DialogueManager : MonoBehaviour
 
         AdvanceDialogue();
     }
-
 
     public bool AdvanceDialogue() {
         if (sentences.Count == 0) {
@@ -70,24 +92,40 @@ public class DialogueManager : MonoBehaviour
     }
 
     private IEnumerator TypeSentence(string sentence) {
-        textOnly.text = "";
+        currentText.text = "";
 
-        float width = 0;
-        float maxWidth = textOnly.rectTransform.rect.width;
-        var textGen = textOnly.cachedTextGenerator;
-        var textSettings = textOnly.GetGenerationSettings(Vector2.zero);
-
+        var textGen = currentText.cachedTextGenerator;
+        var textSettings = currentText.GetGenerationSettings(Vector2.zero);
         
+        float width = 0;
+        float maxWidth = textGen.rectExtents.width;
+        //float maxWidth = currentText.rectTransform.rect.width;
+
+       
+
+        if (hasImage) {
+            int startIndex = sentence.IndexOf('[');
+            if (startIndex != -1) {
+                string setting = sentence.Substring(startIndex + 1, sentence.IndexOf(']') - 1);
+
+                image.sprite = currentEntity.dialogueImages.Find(x => x.name == setting);
+                sentence = sentence.Substring(sentence.IndexOf(']') + 1);
+            }
+        }
 
         foreach (string word in sentence.Split(' ')) {
-            width += textGen.GetPreferredWidth(word, textSettings);
+            width += textGen.GetPreferredWidth(word + " ", textSettings);   // + ' ' because otherwise we only calculate where we are in the text box based only on letters.
+
             if (width >= maxWidth) {
-                textOnly.text += "\n";
+                currentText.text += "\n";
+                Debug.Log($"Width: {width} -- MaxWidth: {maxWidth}");
+                width = textGen.GetPreferredWidth(word + " ", textSettings);
             }
 
             foreach (char letter in (word + " ").ToCharArray()) {
-                textOnly.text += letter;
-                yield return new WaitForSeconds(0.05f);
+                currentText.text += letter;
+                //yield return new WaitForSeconds(0.00f);
+                yield return new WaitForSeconds(0.025f);
             }
         }
 

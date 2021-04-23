@@ -44,7 +44,7 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 2a73e29e93faaa446b25de588d49151b, type: 3}
+    - {fileID: 102900000, guid: ec672c1760bcb5d4e8cabe325e4968b7, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -326,7 +326,6 @@ SpriteAtlas:
   - {fileID: 7666434569925838446, guid: 68f7e162754087b4283b64642fcab557, type: 3}
   - {fileID: -1132040584013907668, guid: 68f7e162754087b4283b64642fcab557, type: 3}
   - {fileID: -793943671134504141, guid: 68f7e162754087b4283b64642fcab557, type: 3}
-  - {fileID: 21300000, guid: 46cc6e53439bc9b46a59fa95d22f00f6, type: 3}
   - {fileID: 5938012242645255967, guid: dae75ba80d94bba48b86b357d0f77a67, type: 3}
   - {fileID: -7446026091647042388, guid: dae75ba80d94bba48b86b357d0f77a67, type: 3}
   - {fileID: -4245738604243887485, guid: dae75ba80d94bba48b86b357d0f77a67, type: 3}
@@ -616,7 +615,6 @@ SpriteAtlas:
   - Tileset_115
   - Tileset_155
   - Tileset_141
-  - happy
   - Player_Walk_A_1
   - Player_Walk_A_0
   - Player_Walk_A_2
