@@ -16,6 +16,6 @@ MonoBehaviour:
   isRepeatable: 0
   sentences:
   - '[happy]Now we go steady to the pictures.'
-  - I always get chocolate stains on my pants.
-  - "And my father, he's going crazy\r."
-  - "He says I'm livin' in a van\r."
+  - '[anxious]I always get chocolate stains on my pants.'
+  - "[neutral]And my father, he's going crazy\r."
+  - "[anxious]He says I'm livin' in a van\r."

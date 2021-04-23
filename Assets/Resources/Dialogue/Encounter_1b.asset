@@ -15,5 +15,5 @@ MonoBehaviour:
   id: 0
   isRepeatable: 1
   sentences:
-  - ...
-  - What do you mean it's "livin' in a trance"?
+  - '[neutral]...'
+  - '[angry]What do you mean it''s "livin'' in a trance"?'
