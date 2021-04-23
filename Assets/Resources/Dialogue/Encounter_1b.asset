@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Encounter_1b
   m_EditorClassIdentifier: 
   id: 0
-  isRepeatable: 0
-  sentences: []
+  isRepeatable: 1
+  sentences:
+  - ...
+  - What do you mean it's "livin' in a trance"?

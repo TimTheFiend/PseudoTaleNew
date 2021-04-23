@@ -28,6 +28,8 @@ public class DialogueManager : MonoBehaviour
 
         text = textImage.GetComponent<Text>();
         image = textImage.GetComponent<Image>();
+
+
     }
 
     void Start()
@@ -69,10 +71,26 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator TypeSentence(string sentence) {
         textOnly.text = "";
-        foreach (char letter in sentence.ToCharArray()) {
-            textOnly.text += letter;
-            yield return new WaitForSeconds(0.05f);
+
+        float width = 0;
+        float maxWidth = textOnly.rectTransform.rect.width;
+        var textGen = textOnly.cachedTextGenerator;
+        var textSettings = textOnly.GetGenerationSettings(Vector2.zero);
+
+        
+
+        foreach (string word in sentence.Split(' ')) {
+            width += textGen.GetPreferredWidth(word, textSettings);
+            if (width >= maxWidth) {
+                textOnly.text += "\n";
+            }
+
+            foreach (char letter in (word + " ").ToCharArray()) {
+                textOnly.text += letter;
+                yield return new WaitForSeconds(0.05f);
+            }
         }
+
     }
 
     public void EndDialogue() {

@@ -24,6 +24,10 @@ public class InteractableEntity : MonoBehaviour
     }
 
     public void EndInteraction() {
+        if (dialogues.Count > 1) {
+            dialogues.RemoveAt(currentDialogueIndex);
+        }
+        return;
         if (!dialogues[currentDialogueIndex].isRepeatable) {
             dialogues.RemoveAt(currentDialogueIndex);
         }
