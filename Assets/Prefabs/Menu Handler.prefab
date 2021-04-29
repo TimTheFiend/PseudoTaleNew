@@ -300,7 +300,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 46cc6e53439bc9b46a59fa95d22f00f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cb5cb10e16e61064bb7c8d3a99645082, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -962,8 +962,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueBox: {fileID: 2072148500}
   textOnly: {fileID: 889484794}
-  textImage: {fileID: 2076358247}
-  text: {fileID: 514150695}
+  textImage: {fileID: 514150695}
   image: {fileID: 1792789235}
 --- !u!1 &5503718181290552955
 GameObject:

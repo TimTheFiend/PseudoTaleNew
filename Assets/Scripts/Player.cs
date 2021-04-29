@@ -18,12 +18,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     private List<GameObject> interactableEntities;
     
-    public bool canInteract;
+    public bool canInteract;  // Is set by collider, and is based on if interactableEntities
 
 
     private void Awake() {
-        interactableEntities = new List<GameObject>();
+        DontDestroyOnLoad(gameObject);
 
+        interactableEntities = new List<GameObject>();
         state.ChangeState(new MovementState(this));
     }
 
@@ -55,13 +56,14 @@ public class Player : MonoBehaviour
     }
 
     #region Collisions
+    // On collision, adds the gameobject to `interactableEntities`.
     private void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.tag == "Entity") {
             interactableEntities.Add(other.gameObject);
         }
         UpdateCanInteract();
     }
-
+    // On collisionExit, removes the gameobject from
     private void OnCollisionExit2D(Collision2D other) {
         if (interactableEntities.Contains(other.gameObject)) {
             interactableEntities.Remove(other.gameObject);
