@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class DamageArea : MonoBehaviour
 {
+    [Header("Identification Debug")]
+    public string name;
     [Header("Damage Variables")]
     [Range(0.0f, 1.0f)]
     public float damageModifier;

@@ -8,81 +8,121 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerCombat : MonoBehaviour
 {
+    #region Components
+    private Rigidbody2D rbody;
+    private SpriteRenderer sprite;
+    #endregion
+
+    [Header("Debug")]
+    [SerializeField] private GameObject damageArea;  // Which `Encounter.DamageArea` object `PlayerCombat` is currently inside
+    [SerializeField] private bool isPlayerTurn;  // if true, user input is registered
+    
     [Header("Player Variables")]
     [Range(1f, 10f)] public float playerSpeed = 5f;
-    [Range(1f, 10f)] public float waitTimeForMovement = 1f;
+    private Vector2 _playerStartPosition;
 
-    [Header("Components")]
-    [SerializeField] private Rigidbody2D rbody;
-    [SerializeField] private SpriteRenderer sprite;
-    [SerializeField] private GameObject damageArea;
+    [Header("\"Animation vars\"")]
+    [Range(0.1f, 5f)] public float actionLengthInSec = 2.5f;    // Length in seconds of end-of-turn "animation".
+    [Range(1, 100)] public int actionLengthInFrames = 50;       // Length in frames of end-of-turn "animation". Higher value = smoother transition
+    [Range(1f, 10f)] public float waitTimeForMovement = 1f;     // Length in seconds inputs are registered.
+    [SerializeField] [Range(1.0f, 2.0f)] private float endPlayerSize = 1.4f;
+    private float endOfTurnTimeIncrement;                      // Length in seconds of every "animation" iteration
+    
 
-    private float playerWidth;  // Not sure if needed with current system
-    private float currentPlayerSpeed;  // Used internally to set speed
-    private Vector2 playerStartPosition;
 
+    private float _playerWidth;  // Not sure if needed with current system
 
+    #region Awake, Start, Update
     void Start()
     {
+        #region Set Initial Variables
+        // Components
         rbody = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
-        playerWidth = transform.localScale.x / 2f;  // Half width
-        playerStartPosition = transform.position;
+        // Player Variables
+        _playerWidth = transform.localScale.x / 2f;  // Half width, side to center
+        _playerStartPosition = transform.position;
+        endOfTurnTimeIncrement = actionLengthInSec / actionLengthInFrames;
+        #endregion
 
-        StartCoroutine(InitializePlayer());
+        ResetPlayer();
     }
 
-    // Update is called once per frame
     void Update()
     {
         MovePlayer();
 
-        if (Input.GetKeyDown("space") || Input.GetMouseButtonDown(0)) {
-
-            StartCoroutine(_PlayerAttack());
-            //PlayerAttack();
+        if ((Input.GetKeyDown("space") || Input.GetMouseButtonDown(0)) && isPlayerTurn) {
+            StartCoroutine(PlayerAttack());
         }
     }
+    #endregion
 
-    // Moves the player from startPosition and towards the right
+    /// <summary>Moves the <see cref="Player"/> object along the x-axis, at <see cref="playerSpeed"/> speed, until
+    /// either <see cref="Player"/> collides with a non-trigger collider, or <see cref="PlayerAttack"/> is called.
+    /// </summary>
     private void MovePlayer() {
-        rbody.velocity = new Vector2(1f * currentPlayerSpeed, 0f);
+        rbody.velocity = new Vector2(1f * (isPlayerTurn ? playerSpeed : 0), 0f);
     }
 
-    private IEnumerator _PlayerAttack() {
-        currentPlayerSpeed = 0;
-        int foobar = 100;
 
-        sprite.color = Color.blue;
-        for (int i = 0; i < foobar; i++) {
-            transform.localScale += new Vector3(0.01f, 0.01f, 0.0f);
-            sprite.color = new Color(0f, 1f, 1f, 1 - (1 / 100));
-            yield return new WaitForSeconds(0.01f);
+    private IEnumerator PlayerAttack() {
+        isPlayerTurn = false;
+
+        // Update sprite opacity and size
+        for (float i = 0.0f; i < actionLengthInSec; i += endOfTurnTimeIncrement) {
+            float newSizeXY = Mathf.Lerp(1, 1 * endPlayerSize, i); 
+            
+            sprite.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, i));  // * -1 to make the value negative
+            transform.localScale = new Vector3(newSizeXY, newSizeXY);
+            
+            yield return new WaitForSeconds(endOfTurnTimeIncrement);
         }
-
-        sprite.color = Color.white;
-        StartCoroutine(InitializePlayer());
-
-        //yield return new WaitForSeconds(2.5f);
+        ResetPlayer();
     }
 
-    //TODO
-    private void PlayerAttack() {
-        transform.localPosition = playerStartPosition;
+    /// <summary>
+    /// Sets <see cref="isPlayerTurn"/> to false, runs the "animation", and resets <see cref="PlayerCombat"/>
+    /// </summary>
+    private IEnumerator PlayerLeavesArea() {
+        isPlayerTurn = false;  // Player input disabled.
 
-        StartCoroutine(InitializePlayer());
+        for (float i = 0.0f; i < actionLengthInSec; i += endOfTurnTimeIncrement) {
+            sprite.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, i));  // * -1 to make the value negative
+            yield return new WaitForSeconds(endOfTurnTimeIncrement);
+        }
+        ResetPlayer();
     }
 
-    // Ensures the player has time to react before `Update`
-    private IEnumerator InitializePlayer() {
-        transform.localPosition = playerStartPosition;
-        currentPlayerSpeed = 0;
+    
+    /// <summary>
+    /// Easier to call than <code>StartCoroutine(ResetPlayerPositionForCombat());</code>
+    /// </summary>
+    private void ResetPlayer() {
+        StartCoroutine(ResetPlayerPositionForCombat());
+    }
 
-        Debug.Log("START");
+    /// <summary>
+    /// Sets and prepares default values for Player's turn.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ResetPlayerPositionForCombat() {  // Name is intentionally long to justify `ResetPlayer`s existance
+        transform.localScale = Vector2.one;
+        transform.position = _playerStartPosition;
+        sprite.color = new Color(1, 1, 1, 0);
+        
+        // Countdown to isPlayerTurn
         yield return new WaitForSeconds(waitTimeForMovement);
-        Debug.Log("END");
+        sprite.color = Color.white; 
+        isPlayerTurn = true;
+    }
 
-        currentPlayerSpeed = playerSpeed;
+    #region Collision functions
+    // Conditional makes it so, no matter what, this only happens once per player turn
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (isPlayerTurn) {
+            StartCoroutine(PlayerLeavesArea());
+        }
     }
 
     // Sets the gameobject to damageArea for damagecalculation
@@ -96,4 +136,5 @@ public class PlayerCombat : MonoBehaviour
             damageArea = null;
         }
     }
+#endregion
 }
