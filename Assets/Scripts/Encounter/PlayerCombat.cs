@@ -26,7 +26,6 @@ public class PlayerCombat : MonoBehaviour
     [Range(1, 100)] public int actionLengthInFrames = 50;       // Length in frames of end-of-turn "animation". Higher value = smoother transition
     [Range(1f, 10f)] public float waitTimeForMovement = 1f;     // Length in seconds inputs are registered.
     [SerializeField] [Range(1.0f, 2.0f)] private float endPlayerSize = 1.4f;
-    private float endOfTurnTimeIncrement;                      // Length in seconds of every "animation" iteration
     
 
 
@@ -42,7 +41,6 @@ public class PlayerCombat : MonoBehaviour
         // Player Variables
         _playerWidth = transform.localScale.x / 2f;  // Half width, side to center
         _playerStartPosition = transform.position;
-        endOfTurnTimeIncrement = actionLengthInSec / actionLengthInFrames;
         #endregion
 
         ResetPlayer();
@@ -66,46 +64,53 @@ public class PlayerCombat : MonoBehaviour
     }
 
 
+    #region Coroutines
+    /// <summary> Ends player turn, displays the `animation`, and resets player.</summary>
     private IEnumerator PlayerAttack() {
         isPlayerTurn = false;
 
+        if (damageArea != null) {
+            damageArea.GetComponent<DamageArea>().OnAttack(transform.position.x);
+        }
+
         // Update sprite opacity and size
-        for (float i = 0.0f; i < actionLengthInSec; i += endOfTurnTimeIncrement) {
-            float newSizeXY = Mathf.Lerp(1, 1 * endPlayerSize, i); 
+        for (float i = 0.0f; i < actionLengthInSec; i += actionLengthInSec / actionLengthInFrames) {
+            float newSizeXY = Mathf.Lerp(1, 1 * endPlayerSize, i); // new size
             
             sprite.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, i));  // * -1 to make the value negative
             transform.localScale = new Vector3(newSizeXY, newSizeXY);
             
-            yield return new WaitForSeconds(endOfTurnTimeIncrement);
+            yield return new WaitForSeconds(actionLengthInSec / actionLengthInFrames);
         }
         ResetPlayer();
+
     }
 
-    /// <summary>
-    /// Sets <see cref="isPlayerTurn"/> to false, runs the "animation", and resets <see cref="PlayerCombat"/>
-    /// </summary>
+    /// <summary> Sets <see cref="isPlayerTurn"/> to false, runs the "animation", and resets <see cref="PlayerCombat"/>.</summary>
     private IEnumerator PlayerLeavesArea() {
         isPlayerTurn = false;  // Player input disabled.
+        try {
+            StopCoroutine("PlayerAttack");
+        }
+        catch (Exception) {
 
-        for (float i = 0.0f; i < actionLengthInSec; i += endOfTurnTimeIncrement) {
+            throw;
+        }
+
+        for (float i = 0.0f; i < actionLengthInSec; i += actionLengthInSec / actionLengthInFrames) {
             sprite.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, i));  // * -1 to make the value negative
-            yield return new WaitForSeconds(endOfTurnTimeIncrement);
+            yield return new WaitForSeconds(actionLengthInSec / actionLengthInFrames);
         }
         ResetPlayer();
     }
 
     
-    /// <summary>
-    /// Easier to call than <code>StartCoroutine(ResetPlayerPositionForCombat());</code>
-    /// </summary>
+    /// <summary> /// Easier to call than <code>StartCoroutine(ResetPlayerPositionForCombat());</code></summary>
     private void ResetPlayer() {
         StartCoroutine(ResetPlayerPositionForCombat());
     }
 
-    /// <summary>
-    /// Sets and prepares default values for Player's turn.
-    /// </summary>
-    /// <returns></returns>
+    /// <summary> Sets and prepares default values for Player's turn. </summary>
     private IEnumerator ResetPlayerPositionForCombat() {  // Name is intentionally long to justify `ResetPlayer`s existance
         transform.localScale = Vector2.one;
         transform.position = _playerStartPosition;
@@ -116,6 +121,7 @@ public class PlayerCombat : MonoBehaviour
         sprite.color = Color.white; 
         isPlayerTurn = true;
     }
+    #endregion
 
     #region Collision functions
     // Conditional makes it so, no matter what, this only happens once per player turn
@@ -127,12 +133,14 @@ public class PlayerCombat : MonoBehaviour
 
     // Sets the gameobject to damageArea for damagecalculation
     private void OnTriggerEnter2D(Collider2D other) {
-        damageArea = other.gameObject;
+        if (other.CompareTag("EncounterTarget")) {
+            damageArea = other.gameObject;
+        }
     }
 
     // Removes the damageArea reference, unless it's not itself (in the case of overlapping Colliders)
     private void OnTriggerExit2D(Collider2D other) {
-        if (damageArea == other.gameObject) {
+        if (other.gameObject == damageArea) {
             damageArea = null;
         }
     }
